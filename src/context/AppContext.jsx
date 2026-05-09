@@ -14,6 +14,12 @@ const initialAuthoritiesData = {
   ]
 };
 
+// Helper function to get ISO date string safely
+const getISODateString = (offsetMs = 0) => {
+  const date = new Date(Date.now() + offsetMs);
+  return date.toISOString();
+};
+
 const initialSeedData = [
   {
     id: "seed-1",
@@ -31,12 +37,12 @@ const initialSeedData = [
     submissions: [
       {
         id: "sub-1-1",
-        date: new Date(Date.now() - 86400000).toISOString(),
+        date: getISODateString(-86400000), // Yesterday
         chemicals: { PM25: 15, PM10: 20, SO2: 10, NO2: 0, CO2: 80, O3: 0, NH3: 0 },
         temperature: 150,
         flowRate: 1200,
         hasPurifier: true,
-        aqi: 24, // Will be recalculated by real logic, but mock is Good
+        aqi: 24,
         tax: 0, 
         discrepancies: [],
         bypassDetected: false
@@ -59,12 +65,12 @@ const initialSeedData = [
     submissions: [
       {
         id: "sub-2-1",
-        date: new Date().toISOString(),
+        date: getISODateString(),
         chemicals: { PM25: 0, PM10: 120, SO2: 80, NO2: 60, CO2: 40, O3: 10, NH3: 0 },
         temperature: 140,
         flowRate: 900,
         hasPurifier: false,
-        aqi: 322, // Severe mock
+        aqi: 322,
         tax: 19600, 
         discrepancies: ["SO2", "O3"],
         bypassDetected: false
@@ -87,15 +93,15 @@ const initialSeedData = [
     submissions: [
       {
         id: "sub-3-1",
-        date: new Date().toISOString(),
+        date: getISODateString(),
         chemicals: { PM25: 40, PM10: 50, SO2: 20, NO2: 30, CO2: 200, O3: 0, NH3: 0 },
-        temperature: 45, // Abnormal drop in temp indicating bypass
-        flowRate: 300,  // Abnormal drop in flow rate
+        temperature: 45,
+        flowRate: 300,
         hasPurifier: true,
         aqi: 226, 
         tax: 12400, 
         discrepancies: [],
-        bypassDetected: true // Bypass violation triggered
+        bypassDetected: true
       }
     ]
   }
@@ -109,29 +115,36 @@ export const AppProvider = ({ children }) => {
 
   // Load from localStorage on mount
   useEffect(() => {
-    const storedCompanies = localStorage.getItem('aqi_companies');
-    if (storedCompanies && JSON.parse(storedCompanies).length > 0) {
-      setCompanies(JSON.parse(storedCompanies));
-    } else {
+    try {
+      const storedCompanies = localStorage.getItem('aqi_companies');
+      if (storedCompanies && JSON.parse(storedCompanies).length > 0) {
+        setCompanies(JSON.parse(storedCompanies));
+      } else {
+        setCompanies(initialSeedData);
+        localStorage.setItem('aqi_companies', JSON.stringify(initialSeedData));
+      }
+      
+      const loggedIn = localStorage.getItem('aqi_currentUser');
+      if (loggedIn) {
+        setCurrentUser(JSON.parse(loggedIn));
+      }
+
+      const storedLang = localStorage.getItem('aqi_lang');
+      if (storedLang) {
+        setLanguage(storedLang);
+      }
+
+      const storedAuth = localStorage.getItem('aqi_authorities');
+      if (storedAuth) {
+        setAuthorities(JSON.parse(storedAuth));
+      } else {
+        localStorage.setItem('aqi_authorities', JSON.stringify(initialAuthoritiesData));
+      }
+    } catch (error) {
+      console.error('Error loading from localStorage:', error);
       setCompanies(initialSeedData);
-      localStorage.setItem('aqi_companies', JSON.stringify(initialSeedData));
-    }
-    
-    const loggedIn = localStorage.getItem('aqi_currentUser');
-    if (loggedIn) {
-      setCurrentUser(JSON.parse(loggedIn));
-    }
-
-    const storedLang = localStorage.getItem('aqi_lang');
-    if (storedLang) {
-      setLanguage(storedLang);
-    }
-
-    const storedAuth = localStorage.getItem('aqi_authorities');
-    if (storedAuth) {
-      setAuthorities(JSON.parse(storedAuth));
-    } else {
-      localStorage.setItem('aqi_authorities', JSON.stringify(initialAuthoritiesData));
+      setLanguage('EN');
+      setAuthorities(initialAuthoritiesData);
     }
   }, []);
 
@@ -192,7 +205,7 @@ export const AppProvider = ({ children }) => {
     
     const submission = {
       ...data,
-      date: new Date().toISOString(),
+      date: getISODateString(),
       id: Date.now().toString()
     };
 
