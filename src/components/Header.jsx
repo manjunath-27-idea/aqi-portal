@@ -40,7 +40,7 @@ const Header = () => {
       skip: "ప్రధాన కంటెంట్‌కు దాటవేయి",
       screenReader: "స్క్రీన్ రీడర్ యాక్సెస్",
       title: "పరిశ్రమ వాయు నాణ్యత పోర్టల్",
-      subtitle: "పర్యావరణ, అటవీ మరియు వాతావరణ మార్పుల మంత్రిత్వ శాఖ, భారత ప్రభుత్వం & తెలంగాణ ప్రభుత్వం"
+      subtitle: "పర్యావరణ, అటవీ మరియు వాతావరణ మార్పుల మంత్రిత్వ శాఖ, భారత ప్రభుత్వం"
     }
   };
 
@@ -78,9 +78,9 @@ const Header = () => {
       <div className="container py-3 d-flex justify-content-between align-items-center">
         <div className="d-flex align-items-center">
           <div className="d-flex align-items-center me-3 pe-3 border-end">
-            <img src="/indian_flag.png" alt="Indian National Flag" style={{height: '40px', width: 'auto', marginRight: '15px', borderRadius: '4px', border: '1px solid #ccc'}} />
-            <img src="/indian_emblem.png" alt="State Emblem of India" style={{height: '60px', width: 'auto', marginRight: '15px', mixBlendMode: 'multiply'}} />
-            <img src="/telangana_emblem.png" alt="Telangana State Emblem" style={{height: '60px', width: 'auto', mixBlendMode: 'multiply'}} />
+            <img src="/aqi-portal/indian_flag.png" alt="Indian National Flag" style={{height: '40px', width: 'auto', marginRight: '15px', borderRadius: '4px', border: '1px solid #ccc'}} />
+            <img src="/aqi-portal/indian_emblem.png" alt="State Emblem of India" style={{height: '60px', width: 'auto', marginRight: '15px', mixBlendMode: 'multiply'}} />
+            <img src="/aqi-portal/telangana_emblem.png" alt="Telangana State Emblem" style={{height: '60px', width: 'auto', mixBlendMode: 'multiply'}} />
           </div>
           <div>
             <h1 className="portal-title">{t.title}</h1>
@@ -89,7 +89,7 @@ const Header = () => {
         </div>
         <div>
            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-             <img src="/swachh_bharat.png" alt="Swachh Bharat" style={{height: '60px', width: 'auto', mixBlendMode: 'multiply'}} />
+             <img src="/aqi-portal/swachh_bharat.png" alt="Swachh Bharat" style={{height: '60px', width: 'auto', mixBlendMode: 'multiply'}} />
           </div>
         </div>
       </div>
