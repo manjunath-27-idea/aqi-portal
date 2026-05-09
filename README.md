@@ -2,6 +2,18 @@
 
 An advanced, compliant Air Quality Index (AQI) tracking and tax calculation portal designed for industrial emissions monitoring. Modeled after official Indian Government digital platforms, this application features strict regulatory compliance workflows, automated Continuous Emissions Monitoring Systems (CEMS) discrepancy detection, interactive analytics, and transparent public reporting.
 
+---
+
+## 💻 Technology Stack
+
+- **Frontend**: React.js (Vite), React Router DOM (Configured with `HashRouter` for GitHub Pages deployment)
+- **Data Visualization**: Recharts (for dynamic line graphs)
+- **Styling**: Bootstrap 5, Custom CSS Variables
+- **State Management**: React Context API, LocalStorage Data Persistence
+- **Design System**: High-contrast, official government color palettes (Saffron, Navy Blue, Forest Green) with modern UI elements.
+
+---
+
 ## 🌟 Application Capabilities & System Architecture
 
 This portal is not just a UI; it is a complex rules engine that simulates a real-world environmental protection agency backend. Below is a detailed breakdown of what is actually included in the system.
@@ -44,16 +56,6 @@ A comprehensive portal for the public and government officials to monitor nation
 - **Geographic Danger Zones**: Aggregates all registered companies into regions (North, South, East, West, Central). It calculates the average AQI per zone and highlights the "Top Polluter" in severe zones.
 - **Live Companies Registry**: A master table of all industries, showing their latest AQI, total tax paid, and active alerts.
 - **Dynamic Authorities CMS**: A built-in Content Management System. Admins can edit the names, roles, and departments of Central (Govt of India) and State (Govt of Telangana) authorities. It uses `ui-avatars` to instantly generate official badges based on names, with full support for uploading custom Image URLs.
-
----
-
-## 💻 Technology Stack
-
-- **Frontend**: React.js (Vite), React Router DOM (Configured with `HashRouter` for GitHub Pages deployment)
-- **Data Visualization**: Recharts (for dynamic line graphs)
-- **Styling**: Bootstrap 5, Custom CSS Variables
-- **State Management**: React Context API, LocalStorage Data Persistence
-- **Design System**: High-contrast, official government color palettes (Saffron, Navy Blue, Forest Green) with modern UI elements.
 
 ---
 
