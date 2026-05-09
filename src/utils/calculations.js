@@ -1,18 +1,43 @@
 export const calculateAQI = (chemicals) => {
-  // Mock logic for AQI calculation based on Indian standards (0-500 scale)
-  // Higher is worse.
-  let aqi = 50; // Base AQI
+  // Sub-index calculation (simplified based on EPA/CPCB breakpoints for mock logic)
+  const calculateSubIndex = (conc, type) => {
+    if (conc <= 0) return 0;
+    // Dummy linear interpolation logic for sub-indices
+    if (type === 'PM25') return conc * 1.6;
+    if (type === 'PM10') return conc * 0.9;
+    if (type === 'SO2') return conc * 1.25;
+    if (type === 'NO2') return conc * 1.1;
+    if (type === 'CO2') return conc * 0.05; // CO2 doesn't technically have a strict AQI index, but kept for tax
+    if (type === 'O3') return conc * 1.3;
+    if (type === 'NH3') return conc * 0.8;
+    return 0;
+  };
 
-  if (chemicals.PM25) aqi += chemicals.PM25 * 1.5;
-  if (chemicals.PM10) aqi += chemicals.PM10 * 1.2;
-  if (chemicals.SO2) aqi += chemicals.SO2 * 2.0;
-  if (chemicals.NO2) aqi += chemicals.NO2 * 1.8;
-  if (chemicals.CO2) aqi += chemicals.CO2 * 0.1;
+  const subIndices = [];
+  let pmCount = 0;
+  let totalPollutantsCount = 0;
 
-  // We don't artificially reduce AQI here anymore, we let the raw numbers dictate it
-  // If they have purifiers, they should be reporting lower chemical numbers naturally.
+  for (const [chem, conc] of Object.entries(chemicals)) {
+    if (conc > 0) {
+      if (chem !== 'CO2') { // Exclude CO2 from the mandatory 3-pollutant rule as per standard
+        totalPollutantsCount++;
+        if (chem === 'PM25' || chem === 'PM10') {
+          pmCount++;
+        }
+      }
+      subIndices.push(calculateSubIndex(conc, chem));
+    }
+  }
 
-  return Math.min(Math.round(aqi), 500);
+  // Official AQI Rule 1 & 2: Minimum 3 pollutants, at least one must be PM2.5 or PM10.
+  if (totalPollutantsCount < 3 || pmCount === 0) {
+    return { error: 'AQI Calculation Rejected: Minimum three criteria pollutants required, and one must be PM10 or PM2.5.' };
+  }
+
+  // Official AQI Rule 3: Overall AQI is the maximum of the sub-indices
+  const aqi = Math.max(...subIndices);
+
+  return { value: Math.min(Math.round(aqi), 500) };
 };
 
 export const getAQICategory = (aqi) => {
@@ -26,32 +51,29 @@ export const getAQICategory = (aqi) => {
 
 export const calculateTax = (chemicals, hasPurifier, aqi) => {
   // Tax calculation in INR (₹)
-  // High toxic = high tax rate
-  // Low toxic (CO2) = medium/low tax rate
   const rates = {
-    SO2: 150,  // High
-    NO2: 120,  // High
-    PM25: 100, // High
-    PM10: 80,  // Medium-High
-    CO2: 10    // Low
+    SO2: 150,  
+    NO2: 120,  
+    PM25: 100, 
+    PM10: 80,  
+    O3: 70,
+    NH3: 60,
+    CO2: 10    
   };
 
   let totalTax = 0;
 
-  if (chemicals.PM25) totalTax += chemicals.PM25 * rates.PM25;
-  if (chemicals.PM10) totalTax += chemicals.PM10 * rates.PM10;
-  if (chemicals.SO2) totalTax += chemicals.SO2 * rates.SO2;
-  if (chemicals.NO2) totalTax += chemicals.NO2 * rates.NO2;
-  if (chemicals.CO2) totalTax += chemicals.CO2 * rates.CO2;
+  for (const [chem, conc] of Object.entries(chemicals)) {
+    if (rates[chem] && conc > 0) {
+      totalTax += conc * rates[chem];
+    }
+  }
 
   // Purifier Tax Rebate Logic
   if (hasPurifier) {
     if (aqi <= 100) {
       // Good or Satisfactory AQI with purifiers = 0 Tax!
       totalTax = 0;
-    } else {
-      // If they have purifiers but AQI is still poor, no discount.
-      // They are failing to maintain good quality despite having filters.
     }
   }
 

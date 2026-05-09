@@ -11,6 +11,32 @@ const indianStates = [
   "Delhi"
 ];
 
+const cpcbCategories = [
+  "Aluminum Smelter",
+  "Basic Drugs & Pharmaceuticals",
+  "Cement",
+  "Chlor-Alkali",
+  "Copper Smelter",
+  "Distillery",
+  "Dyes and Dye-Intermediates",
+  "Fertilizer",
+  "Iron and Steel",
+  "Lead Smelter",
+  "Oil Refinery",
+  "Pesticides",
+  "Petrochemicals",
+  "Pulp and Paper",
+  "Sugar",
+  "Tanneries",
+  "Thermal Power Plants",
+  "Rubber Manufacturing & Recycling",
+  "Waste & E-Recycling",
+  "Glass Manufacturing",
+  "Gas Manufacturing & Refilling Stations",
+  "Other Red Category (Food/Metal/Textile)",
+  "Other General Manufacturing"
+];
+
 const Register = () => {
   const { registerCompany, loginCompany } = useContext(AppContext);
   const navigate = useNavigate();
@@ -18,25 +44,32 @@ const Register = () => {
   
   // Registration State
   const [companyName, setCompanyName] = useState('');
-  const [industryType, setIndustryType] = useState('Manufacturing');
-  const [companyCategory, setCompanyCategory] = useState('Medium');
+  const [industryType, setIndustryType] = useState('Thermal Power Plants');
+  const [companyCategory, setCompanyCategory] = useState('Heavy');
   const [region, setRegion] = useState('North');
   const [contactEmail, setContactEmail] = useState('');
   const [stateLocation, setStateLocation] = useState('Delhi');
   const [regNumber, setRegNumber] = useState('');
   
+  // CEMS Metadata
+  const [stationId, setStationId] = useState('');
+  const [gpsCoordinates, setGpsCoordinates] = useState('');
+
   // Declared Chemicals
   const [declaredChemicals, setDeclaredChemicals] = useState({
     PM25: false,
     PM10: false,
     SO2: false,
     NO2: false,
-    CO2: false
+    CO2: false,
+    O3: false,
+    NH3: false
   });
 
   const [successMessage, setSuccessMessage] = useState('');
   const [loginRegNumber, setLoginRegNumber] = useState('');
   const [error, setError] = useState('');
+  const [agreed, setAgreed] = useState(false);
 
   const handleChemicalToggle = (chem) => {
     setDeclaredChemicals(prev => ({ ...prev, [chem]: !prev[chem] }));
@@ -44,8 +77,8 @@ const Register = () => {
 
   const handleRegister = (e) => {
     e.preventDefault();
-    if (!companyName || !regNumber || !stateLocation || !contactEmail) {
-      setError('Please fill all mandatory fields.');
+    if (!companyName || !regNumber || !stateLocation || !contactEmail || !stationId || !gpsCoordinates) {
+      setError('Please fill all mandatory fields including CEMS metadata.');
       return;
     }
 
@@ -63,14 +96,17 @@ const Register = () => {
       contactEmail,
       stateLocation, 
       regNumber,
+      stationId,
+      gpsCoordinates,
       declaredChemicals: activeChemicals
     });
     setSuccessMessage('Registration Successful! Please login using your Registration Number.');
     setIsLogin(true);
     setError('');
     // Clear fields
-    setCompanyName(''); setRegNumber(''); setContactEmail('');
-    setDeclaredChemicals({PM25: false, PM10: false, SO2: false, NO2: false, CO2: false});
+    setCompanyName(''); setRegNumber(''); setContactEmail(''); setStationId(''); setGpsCoordinates('');
+    setDeclaredChemicals({PM25: false, PM10: false, SO2: false, NO2: false, CO2: false, O3: false, NH3: false});
+    setAgreed(false);
   };
 
   const handleLogin = (e) => {
@@ -89,7 +125,7 @@ const Register = () => {
         <div className="col-md-8">
           <div className="gov-card p-4">
             <h3 className="gov-card-title text-center mb-4">
-              {isLogin ? 'Industry Login' : 'Industry Registration & Chemical Declaration'}
+              {isLogin ? 'Industry Login' : 'Industry Registration & OCEMS Declaration'}
             </h3>
             
             {error && <div className="alert alert-danger py-2">{error}</div>}
@@ -115,38 +151,35 @@ const Register = () => {
               </form>
             ) : (
               <form onSubmit={handleRegister}>
+                <h5 className="border-bottom pb-2 mb-3 text-primary">Company Profile</h5>
                 <div className="mb-3">
                   <label className="form-label fw-bold">Company Name <span className="text-danger">*</span></label>
                   <input type="text" className="form-control" value={companyName} onChange={e => setCompanyName(e.target.value)} />
                 </div>
                 
                 <div className="row">
-                  <div className="col-md-4 mb-3">
-                    <label className="form-label fw-bold">Industry Type</label>
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label fw-bold">CPCB Industry Category <span className="text-danger">*</span></label>
                     <select className="form-select" value={industryType} onChange={e => setIndustryType(e.target.value)}>
-                      <option value="Manufacturing">Manufacturing</option>
-                      <option value="Chemical">Chemical Processing</option>
-                      <option value="Mining">Mining</option>
-                      <option value="Power Plant">Power Plant</option>
-                      <option value="Textile">Textile</option>
+                      {cpcbCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                     </select>
                   </div>
-                  <div className="col-md-4 mb-3">
-                    <label className="form-label fw-bold">Company Category</label>
+                  <div className="col-md-3 mb-3">
+                    <label className="form-label fw-bold">Scale</label>
                     <select className="form-select" value={companyCategory} onChange={e => setCompanyCategory(e.target.value)}>
-                      <option value="Heavy">Heavy Scale</option>
-                      <option value="Medium">Medium Scale</option>
-                      <option value="Small">Small Scale / MSME</option>
+                      <option value="Heavy">Heavy</option>
+                      <option value="Medium">Medium</option>
+                      <option value="Small">Small/MSME</option>
                     </select>
                   </div>
-                  <div className="col-md-4 mb-3">
+                  <div className="col-md-3 mb-3">
                     <label className="form-label fw-bold">Region Zone</label>
                     <select className="form-select" value={region} onChange={e => setRegion(e.target.value)}>
-                      <option value="North">North Zone</option>
-                      <option value="South">South Zone</option>
-                      <option value="East">East Zone</option>
-                      <option value="West">West Zone</option>
-                      <option value="Central">Central Zone</option>
+                      <option value="North">North</option>
+                      <option value="South">South</option>
+                      <option value="East">East</option>
+                      <option value="West">West</option>
+                      <option value="Central">Central</option>
                     </select>
                   </div>
                 </div>
@@ -161,6 +194,18 @@ const Register = () => {
                     <select className="form-select" value={stateLocation} onChange={e => setStateLocation(e.target.value)}>
                       {indianStates.map(st => <option key={st} value={st}>{st}</option>)}
                     </select>
+                  </div>
+                </div>
+
+                <h5 className="border-bottom pb-2 mt-4 mb-3 text-primary">CEMS Hardware Metadata</h5>
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label fw-bold">OCEMS Station ID / MAC <span className="text-danger">*</span></label>
+                    <input type="text" className="form-control" value={stationId} onChange={e => setStationId(e.target.value)} placeholder="e.g. CEMS-DEL-001" />
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label fw-bold">GPS Coordinates (Lat, Long) <span className="text-danger">*</span></label>
+                    <input type="text" className="form-control" value={gpsCoordinates} onChange={e => setGpsCoordinates(e.target.value)} placeholder="e.g. 28.6139, 77.2090" />
                   </div>
                 </div>
 
@@ -187,9 +232,26 @@ const Register = () => {
 
                 <div className="mb-4">
                   <label className="form-label fw-bold">Government Registration Number <span className="text-danger">*</span></label>
-                  <input type="text" className="form-control" value={regNumber} onChange={e => setRegNumber(e.target.value)} />
+                  <input type="text" className="form-control" value={regNumber} onChange={e => setRegNumber(e.target.value)} placeholder="Official license number" />
                 </div>
-                <button type="submit" className="btn btn-gov-primary w-100 py-2">Submit Registration & Declaration</button>
+
+                <div className="form-check mb-4 p-3 bg-light border rounded ms-0">
+                  <input 
+                    className="form-check-input ms-1 me-2" 
+                    type="checkbox" 
+                    id="ack-limitations" 
+                    checked={agreed} 
+                    onChange={(e) => setAgreed(e.target.checked)} 
+                    style={{cursor: 'pointer'}}
+                  />
+                  <label className="form-check-label text-muted small d-inline" htmlFor="ack-limitations" style={{ lineHeight: '1.4', cursor: 'pointer' }}>
+                    <strong>Statutory Acknowledgement:</strong> I acknowledge and agree to the statutory limitations of data dissemination. I consent to the automated, continuous transmission of OCEMS data to the Central Pollution Control Board (CPCB) and understand that the emission of undeclared chemicals or evidence of filter bypass will result in immediate regulatory action, severe taxation, and site inspection.
+                  </label>
+                </div>
+
+                <button type="submit" className="btn btn-gov-primary w-100 py-2 fw-bold" disabled={!agreed}>
+                  Submit Registration & Declaration
+                </button>
                 <div className="text-center mt-3">
                   <span className="text-muted">Already registered? </span>
                   <button type="button" className="btn btn-link p-0 text-decoration-none" onClick={() => {setIsLogin(true); setError(''); setSuccessMessage('');}}>Login Here</button>

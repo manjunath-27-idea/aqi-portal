@@ -2,73 +2,100 @@ import React, { createContext, useState, useEffect } from 'react';
 
 export const AppContext = createContext();
 
+const initialAuthoritiesData = {
+  central: [
+    { id: 'c1', name: 'Shri Piyush Goyal', role: "Hon'ble Minister", department: 'Ministry of Commerce & Industry', bg: '0D8ABC', imageUrl: '' },
+    { id: 'c2', name: 'Shri Bhupender Yadav', role: "Hon'ble Minister", department: 'Ministry of Environment & Forests', bg: '0D8ABC', imageUrl: '' },
+    { id: 'c3', name: 'Shri Tanmay Kumar', role: 'Chairman', department: 'Central Pollution Control Board', bg: '0D8ABC', imageUrl: '' }
+  ],
+  state: [
+    { id: 's1', name: 'Shri D. Sridhar Babu', role: "Hon'ble Minister", department: 'Industries & Commerce, IT', bg: '198754', imageUrl: '' },
+    { id: 's2', name: 'Smt. Konda Surekha', role: "Hon'ble Minister", department: 'Environment & Forests', bg: '198754', imageUrl: '' }
+  ]
+};
+
 const initialSeedData = [
   {
     id: "seed-1",
     companyName: "Tata Steel Facility",
-    industryType: "Manufacturing",
+    industryType: "Iron and Steel",
     companyCategory: "Heavy",
     region: "East",
     stateLocation: "Jharkhand",
     contactEmail: "compliance@tatasteel.com",
     regNumber: "TATA1001",
-    declaredChemicals: ["PM25", "PM10", "CO2"],
+    stationId: "CEMS-JHR-001",
+    gpsCoordinates: "23.8004° N, 86.4312° E",
+    declaredChemicals: ["PM25", "PM10", "CO2", "SO2"],
     hasAcceptedRules: true,
     submissions: [
       {
         id: "sub-1-1",
         date: new Date(Date.now() - 86400000).toISOString(),
-        chemicals: { PM25: 15, PM10: 20, SO2: 0, NO2: 0, CO2: 80 },
+        chemicals: { PM25: 15, PM10: 20, SO2: 10, NO2: 0, CO2: 80, O3: 0, NH3: 0 },
+        temperature: 150,
+        flowRate: 1200,
         hasPurifier: true,
-        aqi: 55, // Good
-        tax: 0, // Purifier + Good AQI = 0 Tax
-        discrepancies: []
+        aqi: 24, // Will be recalculated by real logic, but mock is Good
+        tax: 0, 
+        discrepancies: [],
+        bypassDetected: false
       }
     ]
   },
   {
     id: "seed-2",
     companyName: "Vapi Chemical Works",
-    industryType: "Chemical",
+    industryType: "Petrochemicals",
     companyCategory: "Heavy",
     region: "West",
     stateLocation: "Gujarat",
     contactEmail: "admin@vapichem.in",
     regNumber: "VAPI9922",
-    declaredChemicals: ["CO2", "NO2"],
+    stationId: "CEMS-GUJ-842",
+    gpsCoordinates: "20.3667° N, 72.9167° E",
+    declaredChemicals: ["PM10", "CO2", "NO2"],
     hasAcceptedRules: true,
     submissions: [
       {
         id: "sub-2-1",
         date: new Date().toISOString(),
-        chemicals: { PM25: 0, PM10: 0, SO2: 80, NO2: 60, CO2: 40 },
+        chemicals: { PM25: 0, PM10: 120, SO2: 80, NO2: 60, CO2: 40, O3: 10, NH3: 0 },
+        temperature: 140,
+        flowRate: 900,
         hasPurifier: false,
-        aqi: 322, // Severe
-        tax: 19600, // 80*150 + 60*120 + 40*10
-        discrepancies: ["SO2"] // They didn't declare SO2
+        aqi: 322, // Severe mock
+        tax: 19600, 
+        discrepancies: ["SO2", "O3"],
+        bypassDetected: false
       }
     ]
   },
   {
     id: "seed-3",
     companyName: "Delhi North Power",
-    industryType: "Power Plant",
+    industryType: "Thermal Power Plants",
     companyCategory: "Medium",
     region: "North",
     stateLocation: "Delhi",
     contactEmail: "reports@delhipower.gov.in",
     regNumber: "DNP4455",
+    stationId: "CEMS-DEL-101",
+    gpsCoordinates: "28.7041° N, 77.1025° E",
     declaredChemicals: ["PM25", "PM10", "SO2", "NO2", "CO2"],
     hasAcceptedRules: true,
     submissions: [
       {
         id: "sub-3-1",
         date: new Date().toISOString(),
-        chemicals: { PM25: 40, PM10: 50, SO2: 20, NO2: 30, CO2: 200 },
+        chemicals: { PM25: 40, PM10: 50, SO2: 20, NO2: 30, CO2: 200, O3: 0, NH3: 0 },
+        temperature: 45, // Abnormal drop in temp indicating bypass
+        flowRate: 300,  // Abnormal drop in flow rate
         hasPurifier: true,
-        aqi: 226, // Poor (Purifier rebate lost because > 100)
-        tax: 12400, // No tax discount because AQI is poor despite purifier
-        discrepancies: []
+        aqi: 226, 
+        tax: 12400, 
+        discrepancies: [],
+        bypassDetected: true // Bypass violation triggered
       }
     ]
   }
@@ -77,7 +104,8 @@ const initialSeedData = [
 export const AppProvider = ({ children }) => {
   const [companies, setCompanies] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
-  const [language, setLanguage] = useState('EN'); // EN, HI, TE
+  const [language, setLanguage] = useState('EN'); 
+  const [authorities, setAuthorities] = useState(initialAuthoritiesData);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -85,7 +113,6 @@ export const AppProvider = ({ children }) => {
     if (storedCompanies && JSON.parse(storedCompanies).length > 0) {
       setCompanies(JSON.parse(storedCompanies));
     } else {
-      // Inject Seed Data if empty
       setCompanies(initialSeedData);
       localStorage.setItem('aqi_companies', JSON.stringify(initialSeedData));
     }
@@ -99,7 +126,21 @@ export const AppProvider = ({ children }) => {
     if (storedLang) {
       setLanguage(storedLang);
     }
+
+    const storedAuth = localStorage.getItem('aqi_authorities');
+    if (storedAuth) {
+      setAuthorities(JSON.parse(storedAuth));
+    } else {
+      localStorage.setItem('aqi_authorities', JSON.stringify(initialAuthoritiesData));
+    }
   }, []);
+
+  const updateAuthority = (type, id, updatedData) => {
+    const updated = { ...authorities };
+    updated[type] = updated[type].map(auth => auth.id === id ? { ...auth, ...updatedData } : auth);
+    setAuthorities(updated);
+    localStorage.setItem('aqi_authorities', JSON.stringify(updated));
+  };
 
   const changeLanguage = (lang) => {
     setLanguage(lang);
@@ -177,7 +218,9 @@ export const AppProvider = ({ children }) => {
       companies,
       currentUser,
       language,
+      authorities,
       changeLanguage,
+      updateAuthority,
       registerCompany,
       loginCompany,
       logout,

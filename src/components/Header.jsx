@@ -19,8 +19,8 @@ const Header = () => {
       admin: "Admin View",
       skip: "Skip to Main Content",
       screenReader: "Screen Reader Access",
-      title: "National Industry Air Quality Portal",
-      subtitle: "Ministry of Environment, Forest and Climate Change, Government of India"
+      title: "Industry Air Quality Portal",
+      subtitle: "Ministry of Environment, Forest and Climate Change, Government of India & Government of Telangana"
     },
     HI: {
       home: "मुख्य पृष्ठ",
@@ -29,8 +29,8 @@ const Header = () => {
       admin: "प्रशासन दृश्य",
       skip: "मुख्य सामग्री पर जाएं",
       screenReader: "स्क्रीन रीडर एक्सेस",
-      title: "राष्ट्रीय उद्योग वायु गुणवत्ता पोर्टल",
-      subtitle: "पर्यावरण, वन और जलवायु परिवर्तन मंत्रालय, भारत सरकार"
+      title: "उद्योग वायु गुणवत्ता पोर्टल",
+      subtitle: "पर्यावरण, वन और जलवायु परिवर्तन मंत्रालय, भारत सरकार और तेलंगाना सरकार"
     },
     TE: {
       home: "హోమ్",
@@ -39,8 +39,8 @@ const Header = () => {
       admin: "అడ్మిన్ వీక్షణ",
       skip: "ప్రధాన కంటెంట్‌కు దాటవేయి",
       screenReader: "స్క్రీన్ రీడర్ యాక్సెస్",
-      title: "జాతీయ పరిశ్రమ వాయు నాణ్యత పోర్టల్",
-      subtitle: "పర్యావరణ, అటవీ మరియు వాతావరణ మార్పుల మంత్రిత్వ శాఖ, భారత ప్రభుత్వం"
+      title: "పరిశ్రమ వాయు నాణ్యత పోర్టల్",
+      subtitle: "పర్యావరణ, అటవీ మరియు వాతావరణ మార్పుల మంత్రిత్వ శాఖ, భారత ప్రభుత్వం & తెలంగాణ ప్రభుత్వం"
     }
   };
 
@@ -77,8 +77,10 @@ const Header = () => {
       
       <div className="container py-3 d-flex justify-content-between align-items-center">
         <div className="d-flex align-items-center">
-          <div style={{ width: '50px', height: '60px', backgroundColor: '#e9ecef', border: '1px solid #ccc', marginRight: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <small>Emblem</small>
+          <div className="d-flex align-items-center me-3 pe-3 border-end">
+            <img src="/indian_flag.png" alt="Indian National Flag" style={{height: '40px', width: 'auto', marginRight: '15px', borderRadius: '4px', border: '1px solid #ccc'}} />
+            <img src="/indian_emblem.png" alt="State Emblem of India" style={{height: '60px', width: 'auto', marginRight: '15px', mixBlendMode: 'multiply'}} />
+            <img src="/telangana_emblem.png" alt="Telangana State Emblem" style={{height: '60px', width: 'auto', mixBlendMode: 'multiply'}} />
           </div>
           <div>
             <h1 className="portal-title">{t.title}</h1>
@@ -86,8 +88,8 @@ const Header = () => {
           </div>
         </div>
         <div>
-           <div style={{ width: '100px', height: '40px', backgroundColor: '#e9ecef', border: '1px solid #ccc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <small>Logo</small>
+           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+             <img src="/swachh_bharat.png" alt="Swachh Bharat" style={{height: '60px', width: 'auto', mixBlendMode: 'multiply'}} />
           </div>
         </div>
       </div>

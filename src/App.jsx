@@ -45,7 +45,7 @@ function App() {
     <AppProvider>
       <div className="d-flex flex-column min-vh-100">
         <Header />
-        <main id="main-content" className="flex-grow-1">
+        <main id="main-content" className="flex-grow-1" role="main">
           <AppRoutes />
         </main>
         <Footer />
