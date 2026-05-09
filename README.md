@@ -1,16 +1,39 @@
-# React + Vite
+# National Industry Air Quality & Tax Portal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An advanced, compliant Air Quality Index (AQI) tracking and tax calculation portal designed for industrial emissions monitoring. Modeled after official Indian Government digital platforms, this application features strict regulatory compliance workflows, automated Continuous Emissions Monitoring Systems (CEMS) discrepancy detection, and transparent public reporting.
 
-Currently, two official plugins are available:
+## Key Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Mandatory Compliance Flow**: Industries must register and acknowledge formal environmental regulations and tax imposition logic before accessing the system.
+- **Toxicity-Weighted Environmental Tax**: Taxes are dynamically calculated based on the specific toxicity of released gases (High tax for $SO_2$ and $NO_2$, lower base tax for $CO_2$).
+- **Purifier Rebate System**: Industries utilizing active Air Purification systems receive a 100% tax rebate (₹0) **only if** they successfully maintain an AQI in the "Good" or "Satisfactory" tier (<= 100).
+- **Sensor Discrepancy Engine**: Companies must declare their expected emissions during registration. If daily sensor submissions contain undeclared chemicals, the system immediately flags the facility for non-compliance.
+- **AI-Driven Mitigation Strategies**: The dashboard analyzes daily chemical footprints and provides tailored, actionable advice to reduce specific emissions (e.g., suggesting Scrubber maintenance for high $SO_2$).
+- **Geographic Danger Zones**: The public Admin dashboard groups industries by regional zones (North, South, East, West, Central) and identifies the top polluting companies in severe AQI zones.
+- **Multi-Lingual Support**: Built-in language toggles (English, Hindi, Telugu) for strict GIGW accessibility compliance.
+- **Dynamic Authorities**: The dashboard automatically maps and displays the appropriate State Pollution Control Board authorities based on the industry's registered state.
 
-## React Compiler
+## Technology Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Frontend**: React.js (Vite), React Router DOM
+- **Styling**: Bootstrap 5, Custom CSS Variables
+- **State Management**: React Context API, LocalStorage Data Persistence
+- **Design System**: Glassmorphism elements combined with high-contrast, official government color palettes (Saffron, Navy Blue, Forest Green).
 
-## Expanding the ESLint configuration
+## Running Locally
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+## Seed Data
+
+The application comes pre-loaded with demonstration data to immediately populate the Admin Dashboard without manual registration:
+- **Tata Steel**: Compliant heavy industry, ₹0 tax.
+- **Vapi Chemical Works**: Severe AQI, triggering undeclared chemical discrepancies.
+- **Delhi North Power**: Power plant failing to maintain clean air despite having purifiers, revoking their tax rebate.
